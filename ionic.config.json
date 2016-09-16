@@ -1,0 +1,12 @@
+{
+  "name": "cinetube",
+  "app_id": "",
+  "v2": true,
+  "typescript": true,
+  "proxies": [
+    {
+      "path": "/api",
+      "proxyUrl": "https://crossorigin.me/https://www.reddit.com/r/fullmoviesonyoutube/search.xml?q=(200*)&sort=new"
+    }
+  ]
+}
