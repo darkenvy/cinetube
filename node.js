@@ -34,20 +34,16 @@ app.get('/', function(req, res) {
     if (error) {res.send('ERROR: ', error)}
     else {
       var allMovies = []
-
       var foundMovies = body.match(regexClean1);
       for (var listing in foundMovies) {
         var info = regexClean2.exec(foundMovies[listing]);
-        console.log("LISTING ", listing, ": ", info, " : ", regexClean2.exec(foundMovies[listing]), "\n\n");
         if (info) {
           allMovies.push({
             name: info[1],
             link: info[2]
           });
         }
-        // else {console.log(listing, info, foundMovies[listing])};
       }
-
       console.log('send movies');
       res.send(JSON.stringify(allMovies))
     }
