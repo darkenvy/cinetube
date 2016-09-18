@@ -6,7 +6,7 @@
   "proxies": [
     {
       "path": "/api",
-      "proxyUrl": "https://crossorigin.me/http://reddit.com/r/fullmoviesonyoutube/search.xml?q=(200*)&sort=new&restrict_sr=on/.rss"
+      "proxyUrl": "http://localhost:3000"
     }
   ]
 }

@@ -1,0 +1,6 @@
+<ion-list>
+  <ion-item *ngFor="let item of ajaxData">
+    {{item.name}}
+    <img src="{{item.link | youtubeUrl}}" alt="">
+  </ion-item>
+</ion-list>

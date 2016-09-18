@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import {AjaxComponent} from './ajax.component';
+import { AjaxComponent } from './ajax.component';
+
 
 @Component({
   directives: [AjaxComponent],
