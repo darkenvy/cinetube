@@ -2,7 +2,9 @@ var express = require('express');
 var request = require('request');
 var app = express();
 
-var regexClean = /title=&quot;(.*?)&quot;.*?(https?:\/\/w{0,3}\.?youtube.com\/watch\?v=.*?)&quot;/g;
+// var regexClean = /title=&quot;(.*?)&quot;.*?(https?:\/\/w{0,3}\.?youtube.com\/watch\?v=.*?)&quot;/g;
+var regexClean1 = /title=.*?\[link\]/g;
+var regexClean2 = /title=&quot;(.*?)&quot;.*?(https?:\/\/w{0,3}\.?youtu.*?(?:watch\?v=)?.*?)&quot;/g;
 
 
 // -------- Initialize Datascrape on start of node -------- //
@@ -32,22 +34,20 @@ app.get('/', function(req, res) {
     if (error) {res.send('ERROR: ', error)}
     else {
       var allMovies = []
-      // console.log(body);
-      // res.send('s')
-      // console.log(body);
-      var foundMovies = body.match(regexClean);
+
+      var foundMovies = body.match(regexClean1);
       for (var listing in foundMovies) {
-        var info = regexClean.exec(foundMovies[listing]);
-        if (info && info.length >=3) {
-          var movie = {
+        var info = regexClean2.exec(foundMovies[listing]);
+        console.log("LISTING ", listing, ": ", info, " : ", regexClean2.exec(foundMovies[listing]), "\n\n");
+        if (info) {
+          allMovies.push({
             name: info[1],
             link: info[2]
-          };
+          });
         }
-        allMovies.push(movie);
+        // else {console.log(listing, info, foundMovies[listing])};
       }
 
-      // console.log(edited);
       console.log('send movies');
       res.send(JSON.stringify(allMovies))
     }
