@@ -22,11 +22,20 @@ app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
-app.get('/', function(req, res) {
+app.get('/:query', function(req, res) {
   // var data;
-  // res.send('success')
+  // res.send('success' + req.params.query)
   var options = {
-    url: 'https://www.reddit.com/r/fullmoviesonyoutube/search.xml?q=(200*)&sort=new&restrict_sr=on/.rss',
+    url: 'https://www.reddit.com/r/fullmoviesonyoutube/search.xml',
+    qs: {
+      // q: '(200*)',
+      q: req.params.query,
+      sort: 'new',
+      restrict_sr: 'on',
+      limit: '25',
+      after: '25'
+    },
+    // 'q=(200*)&sort=new&restrict_sr=on/.rss'
     method: 'GET',
     headers: [{'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1'}]
   }

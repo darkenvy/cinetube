@@ -1,6 +1,7 @@
+<button (click)="changeData()" class="button button-positive">Change</button>
 <ion-list>
   <ion-item *ngFor="let item of ajaxData">
     <img src="{{item.link | youtubeUrl}}" alt="">
-    <div>{{item.name}}</div>
+    <div><a href="{{item.link}}">{{item.name}}</a></div>
   </ion-item>
 </ion-list>
