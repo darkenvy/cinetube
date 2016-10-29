@@ -1,62 +1,62 @@
+var phantom = require('phantom');
 var express = require('express');
-var request = require('request');
 var app = express();
-
-// var regexClean = /title=&quot;(.*?)&quot;.*?(https?:\/\/w{0,3}\.?youtube.com\/watch\?v=.*?)&quot;/g;
-var regexClean1 = /title=.*?\[link\]/g;
-var regexClean2 = /title=&quot;(.*?)&quot;.*?(https?:\/\/w{0,3}\.?youtu.*?(?:watch\?v=)?.*?)&quot;/g;
-
-
-// -------- Initialize Datascrape on start of node -------- //
-// var url = 'https://isthereanydeal.com/rss/deals/us/';
-// var req = request(url, function(error, response, body) {
-//   if (!error) {
-//     console.log(body);
-//   }
-// });
+let sitepage;
+let phInstance;
+const url = 'https://www.reddit.com/r/fullmoviesonyoutube/search?q=(201*)&sort=new&restrict_sr=on';
 
 
-// -------------- CORS Middleware / routes --------------- //
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+
+const evaluation = function() {
+  // return $('.search-title').map(function(idx, item) {return item.innerText}).toArray();
+  return $('.search-result').map(function(idx, item) {
+    var longTitle = item.children[1].children[0].children[1].innerText,
+        parsed = longTitle.match(/^(.+?)\s?\((\d+)\)\s?\[(\d+.)\]/);
+
+    // undefined error handling
+    if (parsed && parsed.length < 4) {
+      var tmp = parsed[3]; parsed[3] = 0; parsed[4] = tmp;
+    } else if (!parsed) {parsed = [0,0,0,0];}
+
+    // construct object
+    return {
+      title: parsed[1],
+      year: parsed[2],
+      quality: parsed[3],
+      url: item.children[1].children[2].children[1].href
+    }
+  }).toArray();
+
+}
+
+
+// ---------------------------------------------------------------------- //
+
+
+
 app.get('/:query', function(req, res) {
   // var data;
   // res.send('success' + req.params.query)
-  var options = {
-    url: 'https://www.reddit.com/r/fullmoviesonyoutube/search.xml',
-    qs: {
-      // q: '(200*)',
-      q: req.params.query,
-      sort: 'new',
-      restrict_sr: 'on',
-      limit: '25',
-      after: '25'
-    },
-    // 'q=(200*)&sort=new&restrict_sr=on/.rss'
-    method: 'GET',
-    headers: [{'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1'}]
-  }
-  var req = request(options, function(error, response, body) {
-    if (error) {res.send('ERROR: ', error)}
-    else {
-      var allMovies = []
-      var foundMovies = body.match(regexClean1);
-      for (var listing in foundMovies) {
-        var info = regexClean2.exec(foundMovies[listing]);
-        if (info) {
-          allMovies.push({
-            name: info[1],
-            link: info[2]
-          });
-        }
-      }
-      console.log('send movies');
-      res.send(JSON.stringify(allMovies))
-    }
-  });
+  phantom.create()
+    .then(instance => {
+      phInstance = instance;
+      return instance.createPage();
+    })
+    .then(page => {
+      sitepage = page;
+      page.open(url)
+      return sitepage.evaluate(evaluation);
+    })
+    .then(content => {
+      res.send(JSON.stringify(content))
+      // console.log(content);
+      sitepage.close();
+      phInstance.exit();
+    })
+    .catch(error => {
+      console.log(error);
+      phInstance.exit();
+    });
 
 })
 
